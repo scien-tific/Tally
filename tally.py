@@ -16,15 +16,15 @@ class TallyEventListener(EventListener):
 		
 		return self.settings.get(DEFAULT_SYNTAX)
 	
-	def is_shown(self):
-		return self.settings.get("show")
+	def enabled(self):
+		return self.settings.get("enabled")
 	
 	def max_size(self):
 		return self.settings.get("max_size")
 	
 	
 	def update(self, view):
-		if not self.is_shown() or view.size() > self.max_size():
+		if not self.enabled() or view.size() > self.max_size():
 			view.erase_status("tally")
 			for v in view.clones():
 				v.erase_status("tally")
@@ -48,18 +48,18 @@ class TallyEventListener(EventListener):
 		self.update(view)
 	
 	def on_modified_async(self, view):
-		if not view.is_primary():
+		if view.is_primary():
 			self.update(view)
 
 
-class TallyShowCommand(ApplicationCommand):
+class TallyEnableCommand(ApplicationCommand):
 	def run(self):
 		settings = sublime.load_settings(SETTINGS_FILE)
-		settings.set("show", True)
+		settings.set("enabled", True)
 		sublime.save_settings(SETTINGS_FILE)
 
-class TallyHideCommand(ApplicationCommand):
+class TallyDisableCommand(ApplicationCommand):
 	def run(self):
 		settings = sublime.load_settings(SETTINGS_FILE)
-		settings.set("show", False)
+		settings.set("enabled", False)
 		sublime.save_settings(SETTINGS_FILE)

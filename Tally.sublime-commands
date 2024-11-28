@@ -1,7 +1,7 @@
 [{
-	"caption": "Tally: Show",
-	"command": "tally_show"
+	"caption": "Tally: Enable",
+	"command": "tally_enable"
 }, {
-	"caption": "Tally: Hide",
-	"command": "tally_hide"
+	"caption": "Tally: Disable",
+	"command": "tally_disable"
 }]
