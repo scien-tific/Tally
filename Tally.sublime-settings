@@ -1,0 +1,6 @@
+{
+	"show": true,
+	"max_size": 8000000,
+	"default": "^\\s*[^\\s].*$",
+	"Python": "^\\s*[^\\s#].*$"
+}

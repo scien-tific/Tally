@@ -1,0 +1,7 @@
+[{
+	"caption": "Tally: Show",
+	"command": "tally_show"
+}, {
+	"caption": "Tally: Hide",
+	"command": "tally_hide"
+}]
