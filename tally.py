@@ -7,11 +7,13 @@ DEFAULT_SYNTAX = "default"
 
 
 class TallyEventListener(EventListener):
+	def __init__(self):
+		self.settings = sublime.load_settings(SETTINGS_FILE)
+		self.line_counts = {}
+	
+	
 	def get_regex(self, syntax):
-		if syntax is None:
-			return self.settings.get(DEFAULT_SYNTAX)
-		
-		if self.settings.has(syntax.name):
+		if syntax is not None and self.settings.has(syntax.name):
 			return self.settings.get(syntax.name)
 		
 		return self.settings.get(DEFAULT_SYNTAX)
@@ -24,32 +26,34 @@ class TallyEventListener(EventListener):
 	
 	
 	def update(self, view):
+		if not view.is_valid() or view.element() is not None:
+			return
+		
 		if not self.enabled() or view.size() > self.max_size():
 			view.erase_status("tally")
-			for v in view.clones():
-				v.erase_status("tally")
-			
 			return
 		
 		syntax = view.syntax()
-		regex = self.get_regex(syntax)
-		count = len(view.find_all(regex))
-		status = "Tally " + str(count)
+		count = 0
+		change_count = -1
 		
-		view.set_status("tally", status)
-		for v in view.clones():
-			v.set_status("tally", status)
+		if view.buffer_id() in self.line_counts:
+			(count, change_count) = self.line_counts[view.buffer_id()]
+		
+		if view.change_count() != change_count:
+			regex = self.get_regex(syntax)
+			count = len(view.find_all(regex))
+			change_count = view.change_count()
+			self.line_counts[view.buffer_id()] = (count, change_count)
+		
+		view.set_status("tally", "Tally " + str(count))
 	
-	
-	def on_init(self, views):
-		self.settings = sublime.load_settings(SETTINGS_FILE)
 	
 	def on_activated_async(self, view):
 		self.update(view)
 	
 	def on_modified_async(self, view):
-		if view.is_primary():
-			self.update(view)
+		self.update(view)
 
 
 class TallyEnableCommand(ApplicationCommand):
